@@ -3,6 +3,29 @@
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
+// Helper functions for shimmer effect and Base64 encoding
+const shimmer = (w: number, h: number) => `
+<svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="g">
+      <stop stop-color="#f0f0f0" offset="20%" />
+      <stop stop-color="#e0e0e0" offset="50%" />
+      <stop stop-color="#f0f0f0" offset="70%" />
+    </linearGradient>
+  </defs>
+  <rect width="${w}" height="${h}" fill="#f0f0f0" />
+  <rect id="r" width="${w}" height="${h}" fill="url(#g)" />
+  <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="1s" repeatCount="indefinite"  />
+</svg>`
+
+const toBase64 = (str: string) =>
+  typeof window === 'undefined'
+    ? Buffer.from(str).toString('base64')
+    : window.btoa(str)
+
+// A generic blurDataURL for demonstration. Replace with image-specific ones for best results.
+const genericBlurDataURL = `data:image/svg+xml;base64,${toBase64(shimmer(128, 128))}`;
+
 interface HomepageProps {
   onOpenEnvelope: () => void
   isAnimating: boolean
@@ -14,7 +37,7 @@ export default function Homepage({ onOpenEnvelope, isAnimating }: HomepageProps)
       {/* Profile Picture */}
       <div className="mb-8 relative">
         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-2xl relative">
-          <Image src="/images/1.png" alt="Our Anniversary" width={128} height={128} className="object-cover" />
+          <Image src="/images/1.png" alt="Our Anniversary" width={128} height={128} className="object-cover" placeholder="blur" blurDataURL={genericBlurDataURL} priority quality={75} />
         </div>
         <div className="absolute -top-2 -right-2 w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center">
           <span className="text-white text-sm">💕</span>
